@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami | Santri Production</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0f172a; --accent: #10b981; --glass: rgba(255, 255, 255, 0.95); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--primary); line-height: 1.7; }
+        
+        header { 
+            padding: 70px 20px; 
+            text-align: center; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white; 
+            border-bottom: 5px solid var(--accent);
+        }
+
+        .container { max-width: 800px; margin: -40px auto 50px; padding: 0 20px; }
+        
+        .about-card {
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid white;
+        }
+
+        .vision-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            background: #f0fdf4;
+            color: var(--accent);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 15px; color: var(--primary); }
+        p { color: #475569; margin-bottom: 20px; font-size: 1rem; }
+
+        /* Stats Grid */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+            margin: 30px 0;
+        }
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-item span { display: block; font-size: 1.5rem; margin-bottom: 5px; }
+        .stat-item strong { font-size: 1.2rem; color: var(--accent); }
+        .stat-item p { font-size: 0.8rem; margin: 0; }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-back:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="font-weight:700; font-size: 1.3rem; letter-spacing: -1px;">SANTRI<span style="color:var(--accent)">PRODUCTION</span></div>
+    <h1 style="margin-top:15px; font-size: 2rem;">Digitalisasi Pesantren</h1>
+</header>
+
+<div class="container">
+    <div class="about-card">
+        <div class="vision-badge">Visi & Misi</div>
+        <h2>Membangun Ekosistem Digital Pendidikan Islam</h2>
+        <p>
+            Santri Production hadir untuk menjembatani kesenjangan teknologi di lingkungan pesantren. Melalui aplikasi unggulan kami seperti <b>E-Santri: Digital Management System,</b> kami menghadirkan transparansi keuangan dan kemudahan administrasi bagi ribuan santri di seluruh Indonesia.
+        </p>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span>🛡️</span>
+                <strong>Aman</strong>
+                <p>Integrasi Gateway Resmi</p>
+            </div>
+            <div class="stat-item">
+                <span>⚡</span>
+                <strong>Cepat</strong>
+                <p>Laporan Real-time</p>
+            </div>
+        </div>
+
+        <p>
+            Kami percaya bahwa dengan manajemen yang kuat, yayasan dapat lebih fokus pada pengembangan kualitas pendidikan santri. Bersama Santri Production, mari kita wujudkan pesantren yang mandiri dan berdaya saing di era digital.
+        </p>
+
+        <a href="index.html" class="btn-back">← Kembali ke Halaman Utama</a>
+    </div>
+</div>
+
+</body>
+</html>
