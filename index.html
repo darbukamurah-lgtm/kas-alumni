@@ -3,137 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kas Alumni - Upgrade Sistem</title>
+    <title>Santri Production | Digitalisasi Ekosistem Pendidikan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #10b981;
+            --text-light: #64748b;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            color: white;
-            overflow: hidden;
-        }
-        .container {
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--primary); line-height: 1.5; }
+
+        /* Header / Hero Section */
+        header {
+            padding: 80px 20px;
             text-align: center;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: fadeIn 1s ease-out;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            border-bottom: 5px solid var(--accent);
         }
-        .icon-box {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            width: 100px;
-            height: 100px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
-            font-size: 50px;
-        }
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #3b82f6, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+
+        .logo { font-size: 1.7rem; font-weight: 700; letter-spacing: -1px; margin-bottom: 10px; }
+        .logo span { color: var(--accent); }
+        h1 { font-size: 1.0rem; margin-bottom: 10px; }
+        p.tagline { font-size: 0.7rem; color: #cbd5e1; max-width: 600px; margin: 0 auto; font-style:italic; }
+
+        /* Main Content */
+        .container { max-width: 1000px; margin: -40px auto 40px; padding: 0 20px; }
+        
         .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            background: var(--glass);
             padding: 30px;
-            border-radius: 24px;
-            max-width: 350px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
         }
-        p {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #94a3b8;
-            margin-bottom: 20px;
+
+        h2 { font-size: 1.4rem; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; }
+        h2::before { content: ''; width: 15px; height: 15px; background: var(--accent); border-radius: 50%; margin-right: 10px; }
+
+        /* Services Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .service-item {
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            transition: 0.3s;
         }
-        .progress-container {
-            height: 6px;
-            width: 100%;
-            background: rgba(255,255,255,0.05);
+        .service-item:hover { border-color: var(--accent); background: #f0fdf4; }
+        .service-item h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .service-item p { font-size: 0.9rem; color: var(--text-light); }
+
+        /* Payment Simulation Section */
+        .payment-box {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
             border-radius: 10px;
-            overflow: hidden;
-            position: relative;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: 0.3s;
         }
-        .progress-bar {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #3b82f6;
-            box-shadow: 0 0 15px #3b82f6;
-            border-radius: 10px;
-            animation: loading 2s infinite ease-in-out;
+        .btn:hover { background: #059669; transform: translateY(-2px); }
+
+        /* Footer & Legal */
+        footer {
+            background: white;
+            padding: 50px 20px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
         }
-        .status-text {
-            font-size: 12px;
-            margin-top: 12px;
-            color: #64748b;
-            font-weight: 500;
+        .legal-links { margin: 20px 0; }
+        .legal-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 0.85rem;
         }
-        .footer-text {
-            margin-top: 50px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #3b82f6;
-            font-weight: bold;
-            opacity: 0.8;
-        }
-        @keyframes loading {
-            0% { left: -50%; }
-            100% { left: 100%; }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .legal-links a:hover { color: var(--accent); }
+        .copyright { font-size: 0.8rem; color: #94a3b8; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-       <div class="container">
-        <div class="icon-box">🛠️</div>
-        
-        <h1>Upgrade Sistem</h1>
+<header>
+    <div class="logo">SANTRI<span>PRODUCTION</span></div>
+    <h1>E-Santri: Digital Management System</h1>
+    <p class="tagline">"Digitalizing Pesantren, Empowering Santri."</p>
+</header>
 
-        <div class="card">
-            <p>
-                Sabar ya <b>Guys</b>, web aplikasi sedang dipindahkan ke struktur baru agar lebih ringan dan bebas error.
-            </p>
-            
-            <div class="progress-container">
-                <div class="progress-bar"></div>
+<div class="container">
+    <div class="card">
+        <h2>Layanan Digital Kami</h2>
+        <div class="grid">
+            <div class="service-item">
+                <h3>Syahriah Digital</h3>
+                <p>Pembayaran SPP Bulanan otomatis melalui QRIS, VA, dan Retail Market (Alfamart/Indomaret).</p>
             </div>
-            <div class="status-text">Tahap: Pemisahan Modul Halaman</div>
-        </div>
-
-        <div style="margin-top: 50px; padding: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-            <p style="font-size: 12px; color: #3b82f6; font-weight: bold; letter-spacing: 1.5px; margin-bottom: 5px; text-transform: uppercase;">
-                Web Kas Alumni Santri Al Hidayah v2.0
-            </p>
-            <p style="font-size: 11px; color: #64748b; margin-bottom: 10px;">
-                Copyright &copy; 2026 - Santri Production
-            </p>
-            
-            <a href="https://wa.me/6285875105266" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); padding: 8px 15px; border-radius: 50px; color: #22c55e; font-size: 12px; font-weight: 600; transition: 0.3s;">
-                <span style="font-size: 14px;">💬</span> Hubungi WhatsApp
-            </a>
+            <div class="service-item">
+                <h3>Tabungan Santri</h3>
+                <p>Manajemen uang saku digital dengan sistem Cashless Canteen berbasis QR Code.</p>
+            </div>
+            <div class="service-item">
+                <h3>Dashboard Admin</h3>
+                <p>Laporan keuangan real-time untuk pengurus yayasan dan transparansi data wali santri.</p>
+            </div>
         </div>
     </div>
 
+    <div class="card">
+        <h2>Integrasi Pembayaran</h2>
+<div class="payment-box">
+    <p>Simulasi Pembayaran Syahriah</p>
+    
+    <form action="https://sandbox.ipaymu.com/payment" method="post">
+        <input type="hidden" name="key" value="SANDBOX9C7EE085-BF8D-4C8A-80CA-EB81DB395B7E">
+        
+        <input type="hidden" name="action" value="payment">
+        <input type="hidden" name="product[]" value="Syahriah E-Santri">
+        <input type="hidden" name="price[]" value="50000">
+        <input type="hidden" name="qty[]" value="1">
+        
+        <input type="hidden" name="ureturn" value="https://google.com">
+        <input type="hidden" name="unotify" value="https://google.com">
+        <input type="hidden" name="ucancel" value="https://google.com">
+        
+        <input type="hidden" name="format" value="html">
+        
+        <button type="submit" class="btn" style="border:none; cursor:pointer; width:100%;">
+            Buka Menu Pembayaran (Gaskeun!)
+        </button>
+    </form>
+</div>
+
+        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 15px; text-align: center;">
+            *Platform ini memproses transaksi melalui payment gateway resmi berizin Bank Indonesia.
+        </p>
+    </div>
+</div>
+
+<footer>
+    <div class="logo" style="color: var(--primary); filter: grayscale(1);">SANTRI<span>PRODUCTION</span></div>
+    <div class="legal-links">
+    <a href="index.html">Beranda</a>
+    <a href="tentang.html">Tentang Kami</a>
+    <a href="ketentuan.html">Ketentuan Layanan</a>
+    <a href="privasi.html">Kebijakan Privasi</a>
+    <a href="kontak.html">Hubungi Kami</a>
+</div>
+
+    <p class="copyright">
+        &copy; 2026 SANTRI PRODUCTION DIGITALIS. <br>
+        Seluruh hak cipta dilindungi undang-undang.
+    </p>
+</footer>
+    <script src="ipaymu.js"></script>
 
 </body>
 </html>
