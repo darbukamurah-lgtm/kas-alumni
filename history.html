@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kas Alumni</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- 🔥 TAMBAH INI -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="top-header">
+    <img src="logo.png" class="logo">
+
+    <div>
+      <div class="header">Kas Alumni Santri<br>Al Hidayah Pahing</div>
+      <div class="sub">Web Pencatatan Kas Alumni</div>
+    </div>
+  </div>
+
+  <!-- JAM -->
+  <div id="clockBox">
+    <span id="clockDate">Rabu, 11 Mar 26</span>
+    <span id="clockTime">02:21:14</span>
+  </div>
+
+  <!-- RUNNING TEXT -->
+  <div class="running-text">
+    <div class="running-track" id="runningTrack"></div>
+  </div>
+
+  <!-- HISTORY -->
+<div class="page active" id="historySection">
+
+  <div class="filter-wrapper">
+    <div class="filter-bar">
+      <button class="filter-btn" onclick="setFilter('all')">Semua</button>
+      <button class="filter-btn" onclick="setFilter('today')">Hari ini</button>
+      <button class="filter-btn" onclick="setFilter('yesterday')">Kemarin</button>
+      <button class="filter-btn" onclick="setFilter(3)">3 hari</button>
+      <button class="filter-btn" onclick="setFilter(7)">7 hari</button>
+      <button class="filter-btn" onclick="setFilter(30)">30 hari</button>
+      <button class="filter-btn" onclick="toggleCustom()">Custom</button>
+    </div>
+
+    <div id="customDateBox">
+      <div class="custom-label">Pilih rentang tanggal</div>
+      <input id="rangePicker" placeholder="Pilih tanggal mulai - selesai">
+    </div>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+</div><!-- END container -->
+<div class="bottom-nav">
+
+  <!-- Home -->
+  <a href="index.html" class="nav-item active">
+    <span class="material-symbols-rounded">home</span>
+    <p>Home</p>
+  </a>
+
+  <!-- History -->
+  <a href="history.html" class="nav-item">
+    <span class="material-symbols-rounded">receipt_long</span>
+    <p>History</p>
+  </a>
+
+  <!-- 🔥 TOMBOL TENGAH -->
+  <a href="bayar.html" class="nav-center">
+    <span class="material-symbols-rounded">qr_code_scanner</span>
+  </a>
+
+  <!-- Agenda -->
+  <a href="agenda.html" class="nav-item">
+    <span class="material-symbols-rounded">event</span>
+    <p>Agenda</p>
+  </a>
+
+  <!-- Anggota -->
+  <a href="anggota.html" class="nav-item">
+    <span class="material-symbols-rounded">groups</span>
+    <p>Anggota</p>
+  </a>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

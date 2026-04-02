@@ -1,0 +1,357 @@
+:root{
+  --primary:#16a34a;
+  --primary-soft:#ecfdf5;
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#0f172a;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:system-ui,Segoe UI,Roboto,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:460px;
+  margin:auto;
+  padding-bottom:120px;
+}
+
+/* ===== HEADER ===== */
+.header{
+  position:relative;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
+  padding:40px 20px 30px;
+  border-bottom-left-radius:28px;
+  border-bottom-right-radius:28px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+  text-align:center; /* 🔥 ini kunci */
+}
+
+.header h1{
+  margin:0;
+  margin-top: 10px;
+  font-size:22px;
+}
+
+.header p{
+  margin:4px 0 0;
+  font-size:13px;
+  opacity:.9;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--card);
+  margin:16px;
+  padding:18px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  box-shadow:0 8px 18px rgba(0,0,0,.05);
+}
+
+/* ===== STEP TEXT ===== */
+.step{
+  font-size:12px;
+  font-weight:800;
+  color:var(--primary);
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+
+/* ===== INPUT ===== */
+.search,
+.input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#f8fafc;
+}
+
+/* ===== MEMBER LIST ===== */
+.member-list{
+  margin-top:10px;
+  max-height:150px;
+  overflow:auto;
+}
+
+.member{
+  padding:11px 12px;
+  background:#f8fafc;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.member.active{
+  background:var(--primary-soft);
+  color:#166534;
+}
+
+/* ===== BULAN / STATUS ===== */
+.month{
+  display:flex;
+  justify-content:space-between;
+  padding:11px;
+  border-radius:10px;
+  background:#f8fafc;
+  margin-top:6px;
+  font-size:14px;
+}
+
+.status-red{
+  color:#ef4444;
+  font-weight:700;
+}
+
+.status-green{
+  color:#16a34a;
+  font-weight:700;
+}
+
+/* ===== PROGRESS ===== */
+.progress{
+  height:8px;
+  background:#e5e7eb;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.progress-bar{
+  height:8px;
+  background:var(--primary);
+  width:0%;
+  border-radius:10px;
+  transition:.4s;
+}
+
+/* ===== BUTTON GRID ===== */
+.btn-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+
+.btn{
+  padding:11px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn.active{
+  background:var(--primary);
+  color:white;
+  border:none;
+}
+
+/* ===== PAYMENT ===== */
+.payment-category{
+  margin-top:10px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.payment-header{
+  padding:13px 14px;
+  font-weight:700;
+  display:flex;
+  justify-content:space-between;
+  background:#f8fafc;
+  cursor:pointer;
+}
+
+.payment-list{
+  display:none;
+}
+
+.payment-method{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px 14px;
+  border-top:1px solid #f1f5f9;
+  cursor:pointer;
+}
+
+.payment-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{
+  width:26px;
+  height:26px;
+  object-fit:contain;
+}
+
+.method-name{
+  font-weight:600;
+  font-size:14px;
+}
+
+.method-fee{
+  font-size:12px;
+  color:#64748b;
+}
+
+.method-right{
+  font-weight:700;
+  font-size:14px;
+}
+
+.payment-method.active{
+  background:var(--primary-soft);
+}
+
+.badge{
+  font-size:10px;
+  padding:2px 6px;
+  background:#dcfce7;
+  color:#166534;
+  border-radius:6px;
+  margin-left:6px;
+}
+
+/* ===== SUMMARY ===== */
+.summary{
+  background:#f8fafc;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+  font-size:14px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+}
+
+.total{
+  font-size:18px;
+  font-weight:800;
+}
+
+/* ===== BOTTOM BAR ===== */
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:white;
+  border-top:1px solid var(--border);
+  padding:16px;
+}
+
+.bottom-inner{
+  max-width:460px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.pay-btn{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:13px 22px;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* ===== INVOICE ===== */
+.invoice{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.invoice-box{
+  background:white;
+  padding:26px;
+  border-radius:22px;
+  width:360px;
+  max-width:92%;
+  text-align:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.25);
+}
+
+.invoice-box h3{
+  margin:0 0 6px;
+  font-size:22px;
+  font-weight:800;
+  color:#16a34a;
+}
+
+.invoice-total{
+  margin-top:16px;
+  background:#f1f5f9;
+  border-radius:14px;
+  padding:14px;
+  font-size:24px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+.invoice-wa{
+  margin-top:10px;
+  font-size:13px;
+  color:#64748b;
+  text-align:center;
+}
+
+.invoice-box button{
+  margin-top:10px;
+  margin-right:8px;
+  padding:11px 14px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.invoice-box button:last-child{
+  margin-right:0;
+}
+
+.invoice-box button:nth-of-type(1){
+  background:#22c55e;
+  color:white;
+}
+
+.invoice-box button:nth-of-type(2){
+  background:#3b82f6;
+  color:white;
+}
+
+.invoice-box button:nth-of-type(3){
+  background:#ef4444;
+  color:white;
+}

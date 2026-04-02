@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kas Alumni Payment</title>
+<link rel="stylesheet" href="bayar.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<button onclick="history.length > 1 ? history.back() : window.location.href='index.html'" style="
+position:absolute;
+left:16px;
+top:16px;
+z-index:10;
+background:rgba(255,255,255,0.2);
+border:none;
+color:white;
+padding:10px 14px;
+border-radius:12px;
+cursor:pointer;
+font-size:13px;
+font-weight:600;
+">
+← Kembali
+</button>
+
+<h1 style="text-align:center;">Kas Alumni</h1>
+<p style="text-align:center;">Pembayaran Iuran Alumni Santri Al Hidayah</p>
+
+</div>
+
+<div class="card">
+<div class="step">1 Pilih Anggota</div>
+<input class="search" placeholder="Cari anggota" oninput="searchMember(this.value)">
+<div class="member-list" id="memberList"></div>
+</div>
+
+<div class="card">
+<div class="step">2 Tunggakan</div>
+<div id="bulanList"></div>
+<div class="progress"><div class="progress-bar" id="progress"></div></div>
+<div style="font-size:12px;margin-top:5px" id="progressText"></div>
+<div id="totalTunggakan" style="margin-top:10px;font-weight:700"></div>
+</div>
+
+<div class="card">
+<div class="step">3 Pilih Jenis Pembayaran</div>
+
+<div class="btn-grid">
+<button class="btn active" onclick="setKategori('iuran', this)">Iuran</button>
+<button class="btn" onclick="setKategori('urunan', this)">Urunan</button>
+</div>
+
+<div style="font-size:12px;margin-top:8px;color:#64748b">
+Pilih jenis pembayaran: iuran wajib atau urunan sukarela.
+</div>
+</div>
+
+<div class="card">
+<div class="step">4 Nominal Pembayaran</div>
+<input class="input" id="nominalInput" type="number" placeholder="Masukkan nominal (contoh: 10000)">
+<div style="font-size:12px;margin-top:6px;color:#64748b">
+Bebas isi nominal, maksimal sesuai tunggakan (untuk iuran).
+</div>
+</div>
+
+<div class="card">
+<div class="step">5 Nomor WhatsApp</div>
+<input class="input" id="waInput" placeholder="Contoh: 08123456789" type="tel">
+<div style="font-size:12px;margin-top:6px;color:#64748b">
+Nomor ini akan digunakan untuk mengirim invoice pembayaran.
+</div>
+</div>
+
+<div class="card">
+<div class="step">6 Metode Pembayaran</div>
+<div id="paymentContainer"></div>
+</div>
+
+<div class="card">
+<div class="step">7 Ringkasan Pembayaran</div>
+<div class="summary">
+<div class="row"><span>Iuran</span><span id="sumIuran">Rp0</span></div>
+<div class="row"><span>Layanan</span><span>Rp500</span></div>
+<hr style="border:none;border-top:1px solid var(--border);margin:8px 0">
+<div class="row total"><span>Total</span><span id="totalBayar">Rp0</span></div>
+</div>
+</div>
+<div class="card" style="margin-top: 10px; border: 1px dashed var(--primary); background: var(--primary-soft);">
+    <div style="display: flex; align-items: flex-start; gap: 12px;">
+        <div style="font-size: 20px;">🛡️</div>
+        <div>
+            <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+                Securely Processed by iPaymu
+            </div>
+            <p style="margin: 0; font-size: 11px; color: #166534; line-height: 1.4; font-weight: 500;">
+                Seluruh transaksi iuran dienkripsi otomatis oleh sistem <b>iPaymu</b> dengan standar keamanan Bank Indonesia. Aman & Terpercaya.
+            </p>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<div class="bottom">
+<div class="bottom-inner">
+<div>
+<div style="font-size:12px">Total</div>
+<div class="total" id="bottomTotal">Rp0</div>
+</div>
+<button id="payButton" class="pay-btn" onclick="payWithIPaymu()">Bayar Sekarang</button>
+</div>
+</div>
+
+<div class="invoice" id="invoice">
+  <div class="invoice-box">
+    <h3>Invoice Pembayaran</h3>
+    <div id="invoiceMember"></div>
+    <div id="invoiceBulan"></div>
+    <div class="invoice-total" id="invoiceTotal"></div>
+    <div class="invoice-wa" id="invoiceWA"></div>
+    <button onclick="kirimWA()">Kirim ke WA</button>
+    <button onclick="downloadInvoice()">Download JPG</button>
+    <button onclick="closeInvoice()">Tutup</button>
+  </div>
+</div>
+
+<script src="bayar.js"></script>
+</body>
+</html>
