@@ -340,7 +340,7 @@ const pengumuman = [
 "📢 Iuran Alumni Rp.50.000/tahun bisa di cicil berapapun",
 "📢 Urunan Alumni seikhlasnya untuk acara Maulid Nabi MDT Miftahul Hidayah 2026",
 "📢 Terima kasih atas partisipasi semua anggota",
-"📢 Gunakan menu Bayar untuk scan QRIS dan kirim bukti ke Bendahara"
+"📢 Pembayaran otomatis menggunakan jasa Ipaymu yang sudah terpercaya dan di awasi oleh Bank Indonesia (BI)"
 ];
 
 if(localStorage.getItem("adminLogin") === "true"){
