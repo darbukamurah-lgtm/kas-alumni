@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/admin/index.html",
+      "has": [
+        {
+          "type": "host",
+          "value": "admin.kas-alumni.my.id"
+        }
+      ]
+    }
+  ]
+}
