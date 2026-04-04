@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/admin/index.html",
+      "destination": "/admin/admin.html",
       "has": [
         {
           "type": "host",
