@@ -11,9 +11,11 @@ function formatRp(n){
 
 async function loadAnggota(){
 
+  // Tambahin .order di sini biar urut abjad A-Z
   var { data: anggota } = await supabaseClient
     .from("anggota")
-    .select("*");
+    .select("*")
+    .order("nama", { ascending: true }); // Ini kuncinya, Bro!
 
   var { data: transaksi } = await supabaseClient
     .from("transaksi")
