@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Agenda Alumni - Admin</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css"> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root { --primary: #2563eb; --danger: #ef4444; }
+        
+        /* Override sedikit biar selaras sama content dashboard */
+        .content { padding: 20px 16px 150px 16px; }
+        
+        /* LIST CARD AGENDA */
+        .agenda-list { display: grid; gap: 12px; }
+        .admin-card { 
+            background: white; border-radius: 18px; padding: 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02);
+        }
+        .info h4 { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: #1e293b; }
+        .info p { margin: 2px 0; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 5px; }
+        .info p .material-icons { font-size: 14px; }
+        .badge-feat { background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: 800; margin-left: 8px; border: 1px solid #fcd34d; }
+
+        /* FAB (Disesuaikan agar tidak tabrakan dengan Navbar) */
+        .fab { 
+            position: fixed; bottom: 100px; right: 20px; 
+            background: var(--primary); color: white; width: 60px; height: 60px; 
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); border: none; z-index: 99;
+        }
+
+        /* MODAL AGENDA (Sesuai style lu) */
+        .modal-agenda-box { 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); 
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+            padding: 20px; backdrop-filter: blur(8px);
+        }
+        .modal-agenda-box.show { display: flex; }
+        .modal-content-agenda { 
+            background: white; width: 100%; max-width: 400px; padding: 25px; 
+            border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+        }
+
+        /* FORM ELEMENTS */
+        .form-group { margin-bottom: 12px; }
+        label { font-size: 10px; font-weight: 800; color: #94a3b8; margin-left: 4px; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; border: 2px solid #f1f5f9; border-radius: 14px; 
+            font-size: 14px; outline: none; box-sizing: border-box; background: #f8fafc; font-family: inherit;
+        }
+        input:focus { border-color: var(--primary); background: white; }
+        
+        .btn-save { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .btn-cancel { background: #f1f5f9; color: #64748b; border: none; padding: 12px; width: 100%; border-radius: 14px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        .btn-delete-trigger { color: var(--danger); border: none; background: none; width: 100%; margin-top: 15px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+        #toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 50px; font-size: 12px; font-weight: 600; display: none; z-index: 9999; }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Notifikasi</div>
+
+    <div class="header">
+        <span>AGENDA ALUMNI</span>
+        <button id="btnLogout" class="btn-logout">
+            <span class="material-icons">power_settings_new</span>
+        </button>
+    </div>
+
+    <div class="content">
+        <div id="adminAgendaList" class="agenda-list">
+            <p style="text-align: center; color: #94a3b8; margin-top: 50px;">Memuat data...</p>
+        </div>
+    </div>
+
+    <button class="fab" onclick="bukaModalBaru()">
+        <span class="material-icons" style="font-size: 32px;">add</span>
+    </button>
+
+    <nav class="navbar-premium">
+        <div class="nav-item" id="navDash">
+            <span class="material-icons">dashboard</span>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" id="navAnggota">
+            <span class="material-icons">groups</span>
+            <span>Anggota</span>
+        </div>
+        <div class="nav-center">
+            <div class="center-btn" id="navTransaksi">
+                <span class="material-icons">payments</span>
+            </div>
+        </div>
+        <div class="nav-item active" id="navAgenda">
+            <span class="material-icons">event_note</span>
+            <span>Agenda</span>
+        </div>
+        <div class="nav-item" id="navLaporan">
+            <span class="material-icons">analytics</span>
+            <span>Laporan</span>
+        </div>
+    </nav>
+
+    <div id="modalAgenda" class="modal-agenda-box">
+        <div class="modal-content-agenda">
+            <h2 id="modalTitle" style="margin: 0 0 15px 0; font-size: 18px; text-align: center; color: var(--text-dark);">Detail Agenda</h2>
+            <input type="hidden" id="agendaId">
+            
+            <div class="form-group">
+                <label>Judul Kegiatan</label>
+                <input type="text" id="inJudul" placeholder="...">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <div style="flex:1.2">
+                    <label>Tanggal</label>
+                    <input type="date" id="inTgl" onchange="syncBulan(this.value)">
+                </div>
+                <div style="flex:0.8">
+                    <label>Bulan (Auto)</label>
+                    <input type="text" id="inBulan" readonly style="background: #e2e8f0; color: #475569; font-weight: 800; text-align: center;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <div style="flex:1">
+                    <label>Jam</label>
+                    <input type="time" id="inJam">
+                </div>
+                <div style="flex:1">
+                    <label>Lokasi</label>
+                    <input type="text" id="inLokasi" placeholder="Lokasi...">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Deskripsi</label>
+                <textarea id="inDesc" rows="2" placeholder="Catatan singkat..."></textarea>
+            </div>
+
+            <label style="display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9;">
+                <input type="checkbox" id="inFeatured" style="width: 16px; height: 16px; accent-color: var(--primary);"> 
+                <span style="font-size: 12px; font-weight: 700;">Tampilkan di Banner Depan</span>
+            </label>
+
+            <button onclick="simpanAgenda()" id="btnSimpan" class="btn-save">Simpan Agenda</button>
+            <button onclick="tutupModal()" class="btn-cancel">Batal</button>
+            <button id="btnHapusTrigger" onclick="konfirmasiHapus()" class="btn-delete-trigger" style="display:none">Hapus Agenda Ini</button>
+        </div>
+    </div>
+
+    <div id="modalLogout" class="modal">
+        <div class="modal-content">
+            <h3>Keluar Aplikasi?</h3>
+            <p>Yakin mau logout sekarang, Boss?</p>
+            <div class="modal-footer">
+                <button id="cancelLogout" class="btn-secondary">Batal</button>
+                <button id="confirmLogout" class="btn-danger">Ya, Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirm" class="modal-agenda-box" style="z-index: 3000;">
+        <div class="modal-content-agenda" style="text-align: center;">
+            <span class="material-icons" style="font-size: 48px; color: var(--danger); margin-bottom: 10px;">warning</span>
+            <h2 style="margin: 0; font-size: 18px;">Hapus Agenda?</h2>
+            <p style="font-size: 13px; color: #64748b; margin: 10px 0 20px;">Data bakal ilang permanen, Kakang.</p>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="eksekusiHapus()" id="btnYaHapus" class="btn-save" style="background: var(--danger); margin-top:0;">Hapus</button>
+                <button onclick="tutupConfirm()" class="btn-cancel" style="margin-top:0;">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const client = supabase.createClient(
+            "https://ubpbtsmerfohlfkbuphd.supabase.co",
+            "sb_publishable_NLploEl-HgMy4VTr5jCa5Q_3JLiGEZT"
+        );
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            var sessionReq = await client.auth.getSession();
+            if (!sessionReq.data.session) {
+                window.location.href = 'login.html';
+            } else {
+                setupListeners();
+                loadData();
+            }
+        });
+
+        function setupListeners() {
+            const routes = {
+                "navDash": "admin.html",
+                "navAnggota": "anggota.html",
+                "navTransaksi": "transaksi.html",
+                "navAgenda": "agenda.html",
+                "navLaporan": "laporan.html"
+            };
+
+            Object.keys(routes).forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.onclick = () => window.location.href = routes[id];
+            });
+
+            // Logic Modal Logout lu
+            const modalL = document.getElementById("modalLogout");
+            document.getElementById("btnLogout").onclick = () => {
+                modalL.style.display = "flex";
+                setTimeout(() => modalL.classList.add("show"), 10);
+            };
+            document.getElementById("cancelLogout").onclick = () => {
+                modalL.classList.remove("show");
+                setTimeout(() => modalL.style.display = "none", 300);
+            };
+            document.getElementById("confirmLogout").onclick = async () => {
+                await client.auth.signOut();
+                window.location.href = 'login.html';
+            };
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.innerText = msg; t.style.display = "block";
+            setTimeout(() => { t.style.display = "none"; }, 3000);
+        }
+
+        function syncBulan(val) {
+            if(!val) return;
+            const d = new Date(val);
+            const listBulan = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGT", "SEP", "OKT", "NOV", "DES"];
+            document.getElementById("inBulan").value = listBulan[d.getMonth()];
+        }
+
+        async function loadData() {
+            const list = document.getElementById("adminAgendaList");
+            const { data, error } = await client.from("agenda")
+                .select("*")
+                .order("is_featured", { ascending: false })
+                .order("tanggal", { ascending: true });
+
+            if (error) return showToast("Gagal tarik data!");
+            
+            list.innerHTML = data.length ? "" : '<p style="text-align: center; color: #94a3b8; margin-top: 50px;">Belum ada agenda.</p>';
+            data.forEach(a => {
+                const card = document.createElement("div");
+                card.className = "admin-card";
+                card.onclick = () => bukaModalEdit(a);
+                card.innerHTML = `
+                    <div class="info">
+                        <h4>${a.judul} ${a.is_featured ? '<span class="badge-feat">FEATURED</span>' : ''}</h4>
+                        <p><span class="material-icons">calendar_today</span> ${a.tanggal} [${a.bulan}]</p>
+                        <p><span class="material-icons">place</span> ${a.lokasi} • <span class="material-icons">schedule</span> ${a.jam}</p>
+                    </div>
+                    <span class="material-icons" style="color: #cbd5e1;">edit</span>`;
+                list.appendChild(card);
+            });
+        }
+
+        function bukaModalBaru() {
+            document.getElementById("modalTitle").innerText = "Agenda Baru";
+            document.getElementById("agendaId").value = "";
+            document.getElementById("inJudul").value = "";
+            document.getElementById("inTgl").value = "";
+            document.getElementById("inBulan").value = "";
+            document.getElementById("inJam").value = "08:00";
+            document.getElementById("inLokasi").value = "";
+            document.getElementById("inDesc").value = "";
+            document.getElementById("inFeatured").checked = false;
+            document.getElementById("btnHapusTrigger").style.display = "none";
+            document.getElementById("modalAgenda").classList.add("show");
+        }
+
+        function bukaModalEdit(a) {
+            document.getElementById("modalTitle").innerText = "Edit Agenda";
+            document.getElementById("agendaId").value = a.id;
+            document.getElementById("inJudul").value = a.judul;
+            document.getElementById("inTgl").value = a.tanggal;
+            document.getElementById("inBulan").value = a.bulan;
+            document.getElementById("inJam").value = a.jam;
+            document.getElementById("inLokasi").value = a.lokasi;
+            document.getElementById("inDesc").value = a.deskripsi;
+            document.getElementById("inFeatured").checked = a.is_featured;
+            document.getElementById("btnHapusTrigger").style.display = "block";
+            document.getElementById("modalAgenda").classList.add("show");
+        }
+
+        function tutupModal() { document.getElementById("modalAgenda").classList.remove("show"); }
+        function konfirmasiHapus() { document.getElementById("modalConfirm").classList.add("show"); }
+        function tutupConfirm() { document.getElementById("modalConfirm").classList.remove("show"); }
+
+        async function simpanAgenda() {
+            const id = document.getElementById("agendaId").value;
+            const btn = document.getElementById("btnSimpan");
+            
+            const payload = {
+                judul: document.getElementById("inJudul").value.trim(),
+                tanggal: document.getElementById("inTgl").value,
+                jam: document.getElementById("inJam").value,
+                lokasi: document.getElementById("inLokasi").value.trim(),
+                bulan: document.getElementById("inBulan").value, 
+                deskripsi: document.getElementById("inDesc").value.trim(),
+                is_featured: document.getElementById("inFeatured").checked
+            };
+
+            if (!payload.judul || !payload.tanggal) return showToast("Judul & Tanggal WAJIB!");
+
+            btn.innerText = "Mengirim..."; btn.disabled = true;
+
+            if(payload.is_featured) {
+                await client.from("agenda").update({ is_featured: false }).neq("id", "00000000-0000-0000-0000-000000000000");
+            }
+
+            const { error } = id 
+                ? await client.from("agenda").update(payload).eq("id", id) 
+                : await client.from("agenda").insert([payload]);
+
+            btn.innerText = "Simpan Agenda"; btn.disabled = false;
+            if (error) return showToast("Gagal simpan!");
+            
+            showToast("Agenda Berhasil! 🚀");
+            tutupModal(); loadData();
+        }
+
+                async function eksekusiHapus() {
+            const id = document.getElementById("agendaId").value;
+            const btn = document.getElementById("btnYaHapus");
+            
+            // 1. Ubah teks & matikan tombol biar gak double click
+            btn.innerText = "Menghapus...";
+            btn.disabled = true;
+            
+            const { error } = await client.from("agenda").delete().eq("id", id);
+            
+            if(error) {
+                showToast("Gagal hapus!");
+                // 2. Kalau gagal, balikin teksnya biar bisa coba lagi
+                btn.innerText = "Hapus";
+                btn.disabled = false;
+            } else {
+                showToast("Terhapus! 🫡");
+                
+                // 3. Berhasil! Tutup semua modal
+                tutupConfirm(); 
+                tutupModal(); 
+                loadData();
+                
+                // 4. Reset teks tombol buat penggunaan berikutnya (setelah modal ketutup)
+                setTimeout(() => {
+                    btn.innerText = "Hapus";
+                    btn.disabled = false;
+                }, 500);
+            }
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Input Transaksi - Kas Alumni</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="transaksi.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="header">
+        <span>TRANSAKSI KAS ALUMNI</span>
+        <button id="btnLogout" class="btn-logout">
+            <span class="material-icons">power_settings_new</span>
+        </button>
+    </div>
+
+    <div class="content">
+        <div class="card">
+            <h2>Input Transaksi 🔥</h2>
+            
+            <div class="form-group">
+                <label>Nama Anggota</label>
+                <input type="text" id="inNama" autocomplete="off" placeholder="Ketik nama alumni...">
+                <div id="boxSaran"></div>
+                <div id="msgLunas"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Jenis Transaksi</label>
+                <select id="inJenis">
+                    <option value="">-- Pilih --</option>
+                    <option value="pemasukan">Pemasukan (+)</option>
+                    <option value="pengeluaran">Pengeluaran (-)</option>
+                </select>
+            </div>
+
+            <div id="groupKat" class="form-group">
+                <label>Kategori</label>
+                <select id="inKat">
+                    <option value="iuran">Iuran Tahunan</option>
+                    <option value="urunan">Urunan Acara</option>
+                    <option value="lainnya">Pemasukan Lainnya</option>
+                </select>
+            </div>
+
+            <div id="groupAcara" class="form-group">
+    <label>Nama Acara</label>
+    <input type="text" id="inAcara" placeholder="Contoh: Reuni, Santunan, dll...">
+</div>
+
+
+            <div id="groupBulan" class="form-group">
+                <label>Untuk Bulan</label>
+                <select id="inBulan">
+                    <option value="Januari">Januari</option><option value="Februari">Februari</option>
+                    <option value="Maret">Maret</option><option value="April" selected>April</option>
+                    <option value="Mei">Mei</option><option value="Juni">Juni</option>
+                    <option value="Juli">Juli</option><option value="Agustus">Agustus</option>
+                    <option value="September">September</option><option value="Oktober">Oktober</option>
+                    <option value="November">November</option><option value="Desember">Desember</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nominal (Rp)</label>
+                <input type="number" id="inNominal" placeholder="Contoh: 50000">
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal</label>
+                <input type="date" id="inTgl">
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan</label>
+                <input type="text" id="inKet" placeholder="Catatan tambahan...">
+            </div>
+
+            <button id="btnSimpan" class="btn-simpan">SIMPAN TRANSAKSI 🚀</button>
+        </div>
+    </div>
+
+    <nav class="navbar-premium">
+        <div class="nav-item" id="navDash">
+            <span class="material-icons">dashboard</span>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" id="navAnggota">
+            <span class="material-icons">groups</span>
+            <span>Anggota</span>
+        </div>
+        <div class="nav-center">
+            <div class="center-btn active" id="navTransaksi">
+                <span class="material-icons">payments</span>
+            </div>
+        </div>
+        <div class="nav-item" id="navAgenda">
+            <span class="material-icons">event_note</span>
+            <span>Agenda</span>
+        </div>
+        <div class="nav-item" id="navLaporan">
+            <span class="material-icons">analytics</span>
+            <span>Laporan</span>
+        </div>
+    </nav>
+<div id="mainToast" class="toast">
+    <span id="toastIcon" class="material-icons">info</span>
+    <span id="toastMsg">Message here...</span>
+</div>
+<div id="modalLogout" class="modal">
+    <div class="modal-content">
+        <h3>Keluar Aplikasi?</h3>
+        <p>Yakin mau logout sekarang, Boss?</p>
+        <div class="modal-footer">
+            <button id="cancelLogout" class="btn-secondary">Batal</button>
+            <button id="confirmLogout" class="btn-danger">Ya, Logout</button>
+        </div>
+    </div>
+</div>
+
+    <script src="transaksi.js"></script>
+    
+</body>
+</html>

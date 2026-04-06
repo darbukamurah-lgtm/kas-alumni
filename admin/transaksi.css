@@ -1,0 +1,248 @@
+:root {
+    --primary: #2563eb;
+    --bg-body: #f4f6f9;
+    --text-dark: #1e293b;
+    --text-gray: #94a3b8;
+    --white: #ffffff;
+    --red: #ef4444;
+    --green: #22c55e;
+    --slate-dark: #1e293b;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+    background: #1e293b;
+    color: white;
+    padding: 8px 20px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.btn-logout {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* CONTENT & SEARCH */
+.content { padding: 20px 16px 120px 16px; }
+
+/* CARD FORM */
+.card { 
+    background: var(--white); 
+    width: 100%; 
+    max-width: 450px; 
+    border-radius: 24px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+    padding: 25px; 
+}
+
+.card h2 { 
+    margin-top: 0; font-size: 18px; color: var(--primary); 
+    text-align: center; margin-bottom: 20px;
+}
+
+.form-group { margin-bottom: 15px; position: relative; }
+label { 
+    display: block; font-size: 11px; font-weight: 700; 
+    margin-bottom: 6px; color: var(--text-gray); text-transform: uppercase;
+}
+
+input, select { 
+    width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; 
+    border-radius: 14px; font-size: 15px; outline: none; background: #f8fafc;
+}
+
+input:focus { border-color: var(--primary); background: var(--white); }
+input.error-input { border-color: var(--red) !important; background-color: #fff1f2; }
+
+#boxSaran {
+    display: none; position: absolute; width: 100%; background: white; 
+    border: 1px solid #e2e8f0; border-radius: 12px; z-index: 999; 
+    max-height: 200px; overflow-y: auto; margin-top: 5px;
+}
+
+.saran-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f8fafc; font-size: 14px; }
+.saran-item:hover { background: #eff6ff; color: var(--primary); font-weight: 600; }
+
+.btn-simpan { 
+    width: 100%; padding: 16px; background: var(--primary); 
+    color: white; border: none; border-radius: 16px; font-weight: 700; 
+    cursor: pointer; font-size: 16px; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.btn-simpan:disabled { background: #cbd5e1; box-shadow: none; }
+
+#msgLunas { font-size: 11px; font-weight: 800; margin-top: 6px; display: none; }
+
+/* NAVBAR PREMIUM */
+.navbar-premium {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 92%; max-width: 480px; background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px); border-radius: 28px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    display: flex; justify-content: space-around; align-items: center; padding: 10px 5px; z-index: 1000;
+}
+
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; color: var(--text-gray); cursor: pointer; font-size: 10px; font-weight: 600; }
+.nav-item.active { color: var(--primary); }
+.nav-item .material-icons { font-size: 24px; margin-bottom: 3px; }
+
+.nav-center { position: relative; width: 70px; height: 50px; display: flex; justify-content: center; }
+.center-btn {
+    position: absolute; top: -30px;
+    background: var(--text-gray); color: white; width: 60px; height: 60px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 6px solid var(--bg-body);
+}
+
+.center-btn.active {
+    background: var(--primary);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+.center-btn .material-icons { font-size: 32px; }
+.center-btn:active { transform: scale(0.85) translateY(5px); }
+/* TOAST PREMIUM */
+.toast {
+    position: fixed;
+    top: -100px; /* Sembunyi di atas */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--slate-dark);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.toast.show { top: 30px; } /* Muncul ke bawah */
+.toast .material-icons { font-size: 20px; }
+.toast.error { background: var(--red); }
+.toast.success { background: var(--green); }
+
+/* --- MODAL LOGOUT PREMIUM STYLE --- */
+.modal {
+    display: none; /* Sembunyi dulu */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.6); /* Overlay gelap transparan */
+    backdrop-filter: blur(4px); /* Efek blur kaca di belakang modal */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 24px;
+    width: 85%;
+    max-width: 340px;
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #1e293b;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.modal-content p {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+/* --- FOOTER MODAL (TOMBOL) --- */
+.modal-footer {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-secondary {
+    flex: 1;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger {
+    flex: 1;
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-danger:active {
+    transform: scale(0.95);
+    background: #dc2626;
+}
+
+.btn-secondary:active {
+    transform: scale(0.95);
+    background: #e2e8f0;
+}
+
+/* Biar tombol pas diproses gak bisa diklik */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

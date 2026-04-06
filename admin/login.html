@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto',sans-serif; }
+  body { display:flex; justify-content:center; align-items:center; height:100vh; background:#f0f2f5; flex-direction: column; }
+  
+  /* 1. LOGO DARI FILE */
+  .logo-img { width: 80px; height: auto; margin-bottom: 20px; }
+
+  /* 2. UKURAN CARD TETEP 320PX (SESUAI KODE AWAL) */
+  .login-card { background:#fff; padding:40px; border-radius:12px; width:320px; max-width:90%; box-shadow:0 8px 24px rgba(0,0,0,0.15); text-align:center; position: relative; }
+  .login-card h2 { margin-bottom:20px; color:#333; }
+  
+  .input-box { position: relative; width: 100%; }
+  .login-card input { width:100%; padding:12px 16px; margin:8px 0; border-radius:8px; border:1px solid #ccc; font-size:16px; }
+  
+  /* ICON MATA */
+  .toggle-pass { 
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
+    cursor: pointer; font-size: 20px; user-select: none; z-index: 10;
+  }
+
+  .login-card button { width:100%; padding:12px; margin-top:16px; border:none; border-radius:8px; background:#007AFF; color:#fff; font-size:16px; cursor:pointer; transition:0.3s; }
+  .login-card button:hover { background:#005FCC; }
+  
+  /* TOAST STYLE */
+  .toast {
+    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 12px 25px; border-radius: 50px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 9999;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 14px;
+    display: flex; align-items: center; gap: 8px; width: max-content;
+  }
+  .toast.show { top: 30px; }
+  .toast.err { background: #ef4444; }
+  .toast.ok { background: #22c55e; }
+
+  .login-card .footer { margin-top:16px; font-size:13px; color:#666; }
+</style>
+</head>
+<body>
+
+<img src="logo.webp" alt="Logo" class="logo-img">
+
+<div id="msgToast" class="toast">
+  <span id="tIcon" class="material-icons" style="font-size: 20px;">info</span>
+  <span id="tText"></span>
+</div>
+
+<div class="login-card">
+  <span class="material-icons" style="font-size:40px; color:#007AFF; margin-bottom:12px;">lock</span>
+  <h2>Admin Login</h2>
+  
+  <input type="email" id="email" placeholder="Email Admin" required>
+  
+  <div class="input-box">
+    <input type="password" id="password" placeholder="Password" required>
+    <span id="eyeIcon" class="toggle-pass">🙈</span>
+  </div>
+
+  <button id="loginBtn">Login</button>
+  
+  <div class="footer">© 2026 Kas Admin</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseClient = supabase.createClient(
+    "https://ubpbtsmerfohlfkbuphd.supabase.co",
+    "sb_publishable_NLploEl-HgMy4VTr5jCa5Q_3JLiGEZT"
+  );
+
+  const loginBtn = document.getElementById('loginBtn');
+  const emailInput = document.getElementById('email');
+  const passInput = document.getElementById('password');
+  const eyeIcon = document.getElementById('eyeIcon');
+
+  function tampilToast(pesan, tipe) {
+    const toast = document.getElementById('msgToast');
+    const tText = document.getElementById('tText');
+    const tIcon = document.getElementById('tIcon');
+    
+    toast.className = "toast show " + (tipe === "error" ? "err" : "ok");
+    tText.innerText = pesan;
+    tIcon.innerText = (tipe === "error" ? "report_problem" : "check_circle");
+
+    setTimeout(() => { toast.classList.remove('show'); }, 3000);
+  }
+
+  eyeIcon.addEventListener('click', () => {
+    if (passInput.type === "password") {
+      passInput.type = "text";
+      eyeIcon.innerText = "🙉";
+    } else {
+      passInput.type = "password";
+      eyeIcon.innerText = "🙈";
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if(session) window.location.href = 'index.html';
+  });
+
+  loginBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    const password = passInput.value.trim();
+
+    if(!email || !password){
+      tampilToast("Email dan password harus diisi!", "error");
+      return;
+    }
+
+    loginBtn.innerText = "Checking...";
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    
+    if(error){
+      tampilToast("Email atau Sandi salah! ❌", "error");
+      loginBtn.innerText = "Login";
+      return;
+    }
+
+    window.location.href = 'index.html';
+  });
+
+  [emailInput, passInput].forEach(input => {
+    input.addEventListener('keyup', (e) => { if(e.key === 'Enter') loginBtn.click(); });
+  });
+</script>
+
+</body>
+</html>
