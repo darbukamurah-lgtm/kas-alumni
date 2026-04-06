@@ -144,14 +144,21 @@ window.tutupMenuAksi = function() {
 
 window.kirimTagihan = function(nama, noHp, total, target) {
     const sisaTagihan = target - total;
-    const linkBayar = `https://payment.ipaymu.com/pay/abcde123?name=${encodeURIComponent(nama)}&amount=${sisaTagihan}`; 
-    const pesan = `Sampurasun ${nama}, mengingatkan iuran alumni masih ada selisih Rp ${sisaTagihan.toLocaleString('id-ID')}. Mangga bilih bade dilunasi via QRIS/Transfer klik wae link ieu: ${linkBayar} . Nuhun! 🙏`;
+    
+    // Ganti jadi bayar.html sesuai request Kakang
+    const linkWebBayar = `https://kas-alumni.my.id/bayar.html?nama=${encodeURIComponent(nama)}&tagihan=${sisaTagihan}`; 
+    
+    // Kata-kata sakti tetap aman!
+    const pesan = `Sampurasun ${nama}, mengingatkan iuran alumni masih ada selisih Rp${sisaTagihan.toLocaleString('id-ID')}. Mangga bilih bade dilunasi via QRIS/Transfer klik wae link ieu: ${linkWebBayar} . Nuhun! 🙏`;
+
+    // Kirim ke WA
     const cleanNoHp = noHp.replace(/[^0-9]/g, ''); 
     const urlWA = `https://wa.me/${cleanNoHp}?text=${encodeURIComponent(pesan)}`;
     
     window.open(urlWA, '_blank');
     tutupMenuAksi(); 
 };
+
 
 // 6. CRUD & MODAL
 function initCRUD() {
