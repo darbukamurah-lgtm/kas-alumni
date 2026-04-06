@@ -28,7 +28,7 @@ function setupListeners() {
         "navTransaksi": "transaksi.html",
         "navAgenda": "agenda.html",
         "navLaporan": "laporan.html",
-        "btnAllTrx": "transaksi.html"
+        "btnAllTrx": "laporan.html"
     };
 
     Object.keys(routes).forEach(function(id) {
