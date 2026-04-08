@@ -139,7 +139,7 @@ function prosesKePembayaran() {
         else alert(msg);
     };
 
-    if (!activeMember) return notify("Pilih anggota dulu, Kang!");
+    if (!activeMember) return notify("Pilih anggota dulu, Bro!");
     if (totalBayarUser <= 0) return notify("Nominalnya isi dulu!");
     if (!wa) return notify("Nomor WA jangan dikosongin!");
     if (!selectedMethod) return notify("Pilih metode bayar dulu!");
