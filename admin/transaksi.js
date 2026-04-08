@@ -160,7 +160,7 @@ async function gasSimpan() {
     const tgl = document.getElementById('inTgl').value;
     const bulanIn = document.getElementById('inBulan').value;
     const acara = document.getElementById('inAcara').value.trim();
-    const ket = document.getElementById('inKet').value.trim();
+    const ketInput = document.getElementById('inKet').value.trim(); // Ini bakal jadi CATATAN
 
     if(!nama || !nominalRaw || !jenis) {
         tampilToast("Data belum lengkap!", "error");
@@ -169,6 +169,7 @@ async function gasSimpan() {
 
     const nominalInput = parseInt(nominalRaw);
 
+    // --- LOGIC VALIDASI IURAN (Tetap dipertahankan) ---
     if (jenis === 'pemasukan' && kat === 'iuran') {
         const { data: reqT } = await supabaseClient.from("transaksi").select("*");
         const totalLama = reqT
@@ -193,14 +194,36 @@ async function gasSimpan() {
     btn.innerText = "Memproses..."; 
     btn.disabled = true;
 
+    // --- LOGIC PENENTUAN KATEGORI & CATATAN ---
     let bulFinal = (jenis === 'pemasukan' && kat === 'iuran') ? "2026" : bulanIn;
-    let ketFinal = ket || (jenis === 'pemasukan' ? (kat === 'iuran' ? "Iuran Tahunan" : (kat === 'urunan' ? "Urunan " + acara : "Pemasukan Lainnya")) : "Pengeluaran");
+    
+    // 1. Tentukan Kategori (Buat label utama di History)
+    let kategoriFinal = "";
+    if (jenis === 'pemasukan') {
+        kategoriFinal = (kat === 'iuran') ? "Iuran" : (kat === 'urunan' ? "Urunan" : "Lainnya");
+    } else {
+        kategoriFinal = "Pengeluaran";
+    }
+
+    // 2. Tentukan Catatan (Buat info tambahan kecil di bawah label)
+    // Jika urunan, tambahkan nama acara ke catatan
+    let catatanFinal = ketInput;
+    if (jenis === 'pemasukan' && kat === 'urunan' && acara) {
+        catatanFinal = acara + (ketInput ? " - " + ketInput : "");
+    }
 
     try {
         const { error } = await supabaseClient.from('transaksi').insert([{
-            tanggal: tgl, nama: nama, jenis: jenis, 
-            nominal: nominalInput, bulan: bulFinal, ket: ketFinal
+            tanggal: tgl, 
+            nama: nama, 
+            jenis: jenis, 
+            nominal: nominalInput, 
+            bulan: bulFinal,
+            kategori: kategoriFinal, // 🔥 MASUK KE KOLOM KATEGORI
+            catatan: catatanFinal,   // 🔥 MASUK KE KOLOM CATATAN
+            ket: kategoriFinal + " sukses" // 🔥 TETAP ADA KATA 'SUKSES' BUAT SALDO DASHBOARD
         }]);
+
         if (error) throw error;
         tampilToast("Data berhasil disimpan!", "success");
         setTimeout(() => { location.reload(); }, 1500);
