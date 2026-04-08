@@ -1,211 +1,208 @@
+// === 1. KONFIGURASI & VARIABEL GLOBAL ===
 const SUPABASE_URL = "https://ubpbtsmerfohlfkbuphd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_NLploEl-HgMy4VTr5jCa5Q_3JLiGEZT";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabaseClient;
 
-let IURAN = 0, members = [], transaksi = [];
-let activeMember = null, tunggakan = 0, selectedMethod = null;
-let totalBayarUser = 0;
+var IURAN = 0, members = [], transaksi = [];
+var activeMember = null, tunggakan = 0, selectedMethod = null;
+var totalBayarUser = 0;
 const MAX_TAHUNAN = 50000;
+var selectedKategori = "iuran";
 
-let selectedKategori = "iuran";       
-let savedNominalUrunan = 0;           
-let lastIuranValue = 0;               
+// Variabel Penampung Elemen UI (Biar gak Error Initialization)
+let nominalInput, waInput, memberList, bulanList, progress, progressText, bottomTotal, Toast;
 
-const nominalInput = document.getElementById('nominalInput');
-const waInput = document.getElementById('waInput');
-const memberList = document.getElementById('memberList');
-const bulanList = document.getElementById('bulanList');
-const progress = document.getElementById('progress');
-const progressText = document.getElementById('progressText');
-const paymentContainer = document.getElementById('paymentContainer');
-const sumIuran = document.getElementById('sumIuran');
-// sumFee di html Akang tidak ada id-nya, jadi pastikan updateSummary aman
-const totalBayar = document.getElementById('totalBayar');
-const bottomTotal = document.getElementById('bottomTotal');
-
-// === SET KATEGORI (UTUH) ===
-function setKategori(kategori, el) {
-  selectedKategori = kategori;
-  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-
-  if (kategori === "urunan") {
-    nominalInput.placeholder = "Masukkan nominal urunan bebas";
-    if (lastIuranValue) nominalInput.value = lastIuranValue;
-  } else {
-    nominalInput.placeholder = "Masukkan nominal iuran";
-    let currentNom = Number(nominalInput.value) || 0;
-    currentNom = Math.min(currentNom, MAX_TAHUNAN);
-    nominalInput.value = currentNom;
-    lastIuranValue = currentNom;
-  }
-  renderMonths();
-  updateSummary();
+// === 2. UI LOGIC (Accordion & Pilihan Metode) ===
+function togglePay(id, el) {
+    document.querySelectorAll('.options').forEach(opt => {
+        if(opt.id !== id) opt.classList.remove('active');
+    });
+    document.querySelectorAll('.pay-card').forEach(card => {
+        if(card !== el) card.classList.remove('open');
+    });
+    const target = document.getElementById(id);
+    if (target) {
+        target.classList.toggle('active');
+        el.classList.toggle('open');
+    }
 }
 
-// === LOAD DATA (UTUH) ===
+function pilihMetode(metode) {
+    // Stop propagation biar gak nutup accordion pas diklik itemnya
+    if (window.event) window.event.stopPropagation(); 
+    
+    selectedMethod = metode;
+    const allItems = document.querySelectorAll('.item');
+    allItems.forEach(i => {
+        i.style.background = "#f8fafc";
+        i.style.color = "#334155";
+        i.style.border = "none";
+    });
+    
+    const target = window.event.currentTarget || window.event.target;
+    target.style.background = "#ecfdf5";
+    target.style.color = "#16a34a";
+    target.style.border = "1px solid #16a34a";
+}
+
+// === 3. CORE LOGIC (SUPABASE & RENDER) ===
 async function loadMembers() {
-  const { data, error } = await supabaseClient.from("anggota").select("nama,iuran");
-  if (error) { console.log(error); return; }
-  members = data;
-  renderMembers(members);
+    let { data, error } = await supabaseClient
+        .from("anggota")
+        .select("nama,iuran")
+        .order("nama", { ascending: true }); 
+
+    if (error) return console.error(error);
+    members = data;
+    renderMembers(members);
 }
 
 async function loadTransaksi() {
-  const { data, error } = await supabaseClient.from("transaksi").select("*");
-  if (error) { console.log(error); return; }
-  transaksi = data;
+    let { data, error } = await supabaseClient.from("transaksi").select("*");
+    if (error) return console.error(error);
+    transaksi = data;
 }
 
 function renderMembers(list) {
-  memberList.innerHTML = "";
-  list.forEach(m => {
-    memberList.innerHTML += `
-      <div class="member" onclick="selectMember('${m.nama}','${m.iuran}')">
-        <span>${m.nama}</span><span>›</span>
-      </div>`;
-  });
+    if(!memberList) return;
+    memberList.innerHTML = "";
+    list.forEach(m => {
+        let div = document.createElement('div');
+        div.className = "member";
+        div.innerHTML = `<span>${m.nama}</span><span>›</span>`;
+        div.onclick = () => selectMember(m.nama, m.iuran);
+        memberList.appendChild(div);
+    });
 }
 
 function searchMember(q) {
-  renderMembers(members.filter(x => x.nama.toLowerCase().includes(q.toLowerCase())));
+    renderMembers(members.filter(x => x.nama.toLowerCase().includes(q.toLowerCase())));
 }
 
 function selectMember(name, iuran) {
-  activeMember = name;
-  IURAN = Number(iuran);
-  document.querySelector(".search").value = name;
-  memberList.innerHTML = "";
-  renderMonths();
-  updateSummary();
+    activeMember = name;
+    IURAN = Number(iuran);
+    document.querySelector(".search").value = name;
+    memberList.innerHTML = ""; 
+    renderMonths();
+}
+
+function setKategori(kategori, el) {
+    selectedKategori = kategori;
+    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    if(nominalInput) {
+        nominalInput.placeholder = (kategori === "urunan") ? "Nominal urunan bebas" : "Masukkan nominal iuran";
+    }
+    renderMonths();
 }
 
 function renderMonths() {
-  let totalSudahBayar = 0;
-  transaksi.forEach(t => {
-    if (
-      t.nama === activeMember &&
-      t.jenis?.toLowerCase() === "pemasukan" &&
-      (t.kategori === "iuran" || t.kategori === "urunan") &&
-      t.ket.toLowerCase() === "sukses"
-    ) {
-      totalSudahBayar += Number(t.nominal || 0);
-    }
-  });
-
-  tunggakan = MAX_TAHUNAN - totalSudahBayar;
-  if (tunggakan < 0) tunggakan = 0;
-
-  bulanList.innerHTML = `
-    <div class="month"><span>Total Sudah Bayar</span><span class="status-green">Rp${totalSudahBayar.toLocaleString()}</span></div>
-    <div class="month"><span>Sisa Tunggakan</span><span class="status-red">Rp${tunggakan.toLocaleString()}</span></div>
-  `;
-
-  progress.style.width = (totalSudahBayar / MAX_TAHUNAN * 100) + "%";
-  progressText.innerText = Math.round(totalSudahBayar / MAX_TAHUNAN * 100) + "% dari target tahunan";
-
-  const payBtn = document.querySelector(".pay-btn");
-  if (selectedKategori === "urunan") {
-    nominalInput.disabled = false;
-    payBtn.disabled = false;
-    payBtn.style.opacity = "1";
-    payBtn.innerText = "Bayar Sekarang";
-  } else {
-    if (tunggakan === 0) {
-      nominalInput.value = "";
-      nominalInput.disabled = true;
-      payBtn.disabled = true;
-      payBtn.style.opacity = "0.5";
-      payBtn.innerText = "Sudah Lunas";
-    } else {
-      nominalInput.disabled = false;
-      payBtn.disabled = false;
-      payBtn.style.opacity = "1";
-      payBtn.innerText = "Bayar Sekarang";
-    }
-  }
-  updateSummary();
+    if (!activeMember || !bulanList) return;
+    let totalSudahBayar = 0;
+    transaksi.forEach(t => {
+        if (t.nama === activeMember && t.ket?.toLowerCase() === "sukses") {
+            totalSudahBayar += Number(t.nominal || 0);
+        }
+    });
+    tunggakan = Math.max(0, MAX_TAHUNAN - totalSudahBayar);
+    
+    bulanList.innerHTML = `
+        <div class="month"><span>Sudah Terbayar</span><span class="status-green">Rp${totalSudahBayar.toLocaleString()}</span></div>
+        <div class="month"><span>Sisa Tagihan</span><span class="status-red">Rp${tunggakan.toLocaleString()}</span></div>
+    `;
+    
+    let persen = (totalSudahBayar / MAX_TAHUNAN) * 100;
+    if(progress) progress.style.width = persen + "%";
+    if(progressText) progressText.innerText = Math.round(persen) + "% dari target Rp" + MAX_TAHUNAN.toLocaleString();
+    updateSummary();
 }
 
 function updateSummary() {
-  let nominal = Number(nominalInput.value || 0);
-  if (selectedKategori === "iuran" && nominal > tunggakan) {
-    nominal = tunggakan;
-    nominalInput.value = nominal;
-  }
-  
-  let totalKirim = nominal + 500; // Iuran + Layanan sesuai kode Akang
-
-  sumIuran.innerText = 'Rp' + nominal.toLocaleString();
-  totalBayar.innerText = 'Rp' + totalKirim.toLocaleString();
-  bottomTotal.innerText = 'Rp' + totalKirim.toLocaleString();
-  
-  totalBayarUser = totalKirim; 
+    if(!nominalInput) return;
+    let nominal = Number(nominalInput.value || 0);
+    if (selectedKategori === "iuran" && nominal > tunggakan) {
+        nominal = tunggakan;
+        nominalInput.value = nominal;
+    }
+    totalBayarUser = nominal;
+    if(bottomTotal) bottomTotal.innerText = 'Rp' + nominal.toLocaleString();
 }
 
-// === 🔥 IPAYMU EXECUTION (GANTIKAN TESTMIDTRANS) ===
-async function payWithIPaymu() {
-  if (!activeMember) { alert("Pilih anggota dulu"); return; }
-  const rawNominal = Number(nominalInput.value);
-  if (rawNominal <= 0) { alert("Masukkan nominal iuran/urunan"); return; }
-  if (!waInput.value.trim()) { alert("Isi nomor WA"); return; }
-
-  const payBtn = document.querySelector(".pay-btn");
-  payBtn.innerText = "Processing...";
-  payBtn.disabled = true;
-
-  // URL Function Supabase Akang
-  const ENDPOINT = "https://ubpbtsmerfohlfkbuphd.supabase.co/functions/v1/rapid-task";
-
-  try {
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: activeMember,
-        amount: Math.round(totalBayarUser),
-        phone: waInput.value.trim(),
-        comments: "Iuran " + selectedKategori + " - " + activeMember
-      })
-    });
-
-    const data = await res.json();
+// === 4. PROSES PEMBAYARAN (VALIDASI & REDIRECT) ===
+function prosesKePembayaran() {
+    const wa = waInput ? waInput.value.trim() : "";
     
-    // Redirect ke URL iPaymu agar verifikator tidak melihat XML
-    const paymentUrl = data.url || (data.data ? data.data.url : null);
+    // Satpam Validasi
+    const notify = (msg) => {
+        if (typeof Toast !== 'undefined') Toast.fire({ icon: 'error', title: msg });
+        else alert(msg);
+    };
 
-    if (paymentUrl) {
-      window.location.href = paymentUrl;
-    } else {
-      console.error("IPAYMU ERROR:", data);
-      alert("Gagal mendapatkan link pembayaran. Cek log Supabase.");
-      payBtn.disabled = false;
-      payBtn.innerText = "Bayar Sekarang";
+    if (!activeMember) return notify("Pilih anggota dulu, Kang!");
+    if (totalBayarUser <= 0) return notify("Nominalnya isi dulu!");
+    if (!wa) return notify("Nomor WA jangan dikosongin!");
+    if (!selectedMethod) return notify("Pilih metode bayar dulu!");
+
+    // Simpan data ke LocalStorage
+    const dataCheckout = {
+        nama: activeMember,
+        nominal: totalBayarUser,
+        total: totalBayarUser,
+        wa: wa,
+        metode: selectedMethod,
+        kategori: selectedKategori
+    };
+    
+    localStorage.setItem('checkout_data', JSON.stringify(dataCheckout));
+
+    const btn = document.getElementById("payButton");
+    if(btn) {
+        btn.innerText = "Mengalihkan...";
+        btn.disabled = true;
     }
 
-  } catch (err) {
-    console.error("FETCH ERROR:", err);
-    alert("Koneksi gagal: " + err.message);
-    payBtn.disabled = false;
-    payBtn.innerText = "Bayar Sekarang";
-  }
+    setTimeout(() => {
+        window.location.href = "checkout.html";
+    }, 600);
 }
 
-// === MODAL & RENDER (UTUH) ===
-function renderPayments() {
-  // Akang bisa kosongkan atau biarkan, tapi iPaymu redirect biasanya handle metode di sana
-  paymentContainer.innerHTML = `<div style="font-size:13px; color:#64748b; padding:10px;">Metode pembayaran otomatis tersedia di halaman iPaymu setelah klik bayar.</div>`;
+// === 5. INITIALIZATION (OPERASI JANTUNG) ===
+function init() {
+    // Daftarkan elemen UI SETELAH HTML mendarat
+    nominalInput = document.getElementById('nominalInput');
+    waInput = document.getElementById('waInput');
+    memberList = document.getElementById('memberList');
+    bulanList = document.getElementById('bulanList');
+    progress = document.getElementById('progress');
+    progressText = document.getElementById('progressText');
+    bottomTotal = document.getElementById('bottomTotal');
+
+    // Cek Satpam Toast
+    if (typeof Swal !== 'undefined') {
+        Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    }
+
+    // Cek Supabase
+    if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        loadMembers();
+        loadTransaksi();
+        
+        if (nominalInput) {
+            nominalInput.addEventListener("input", updateSummary);
+        }
+    } else {
+        // Kalau library telat, coba lagi 100ms kemudian
+        setTimeout(init, 100);
+    }
 }
 
-async function init() {
-  await loadMembers();
-  await loadTransaksi();
-  renderPayments();
-}
+// Jalankan sistem
 init();
-
-document.addEventListener("input", (e) => {
-  if (e.target.id === "nominalInput") updateSummary();
-});
