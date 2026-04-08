@@ -234,4 +234,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (href === currentPage) link.classList.add('active');
     else link.classList.remove('active');
   });
-  if(localStorage.getItem("adminLogin") === "true") adminMode = true
+  if(localStorage.getItem("adminLogin") === "true") adminMode = true;
+});
