@@ -102,7 +102,6 @@ function hitungTunggakan(){
 }
 
 function renderTunggakan(){
-function renderTunggakan(){
   const box = document.getElementById("tunggakanList");
   const more = document.getElementById("lihatSemuaTunggakan");
 
