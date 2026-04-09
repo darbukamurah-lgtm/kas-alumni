@@ -102,19 +102,76 @@ function hitungTunggakan(){
 }
 
 function renderTunggakan(){
+function renderTunggakan(){
   const box = document.getElementById("tunggakanList");
   const more = document.getElementById("lihatSemuaTunggakan");
-  if(!box) return;
+
+  if(!box || !more) return;
+
   box.innerHTML = "";
-  const tampil = showAllTunggakan ? tunggakanData : tunggakanData.slice(0,3);
+
+  if(tunggakanData.length === 0){
+    box.innerHTML = "✅ Semua anggota sudah terdata";
+    more.innerText = "";
+    return;
+  }
+
+  const tampil = showAllTunggakan 
+    ? tunggakanData 
+    : tunggakanData.slice(0,3);
+
   tampil.forEach(t => {
     const persen = Math.min((t.total / 50000) * 100, 100);
     const barColor = t.status === "LUNAS" ? "#22c55e" : "#f59e0b";
+
     const div = document.createElement("div");
     div.style.marginBottom = "10px";
-    div.innerHTML = `<div style="font-size:14px;font-weight:600">${t.nama}</div><div style="width:100%;height:6px;background:#e5e7eb;border-radius:4px;overflow:hidden;margin:4px 0;"><div style="width:${persen}%;height:100%;background:${barColor};"></div></div><div style="font-size:12px">${Math.round(persen)}% — <span style="color:${barColor}">${t.status === "LUNAS" ? "LUNAS" : `CICIL (${formatRp(t.total)})`}</span></div>`;
+
+    div.innerHTML = `
+      <div style="font-size:14px;font-weight:600">${t.nama}</div>
+
+      <div style="
+        width:100%;
+        height:6px;
+        background:#e5e7eb;
+        border-radius:4px;
+        overflow:hidden;
+        margin:4px 0;
+      ">
+        <div style="
+          width:${persen}%;
+          height:100%;
+          background:${barColor};
+        "></div>
+      </div>
+
+      <div style="font-size:12px">
+        ${Math.round(persen)}% — 
+        <span style="color:${barColor}">
+          ${t.status === "LUNAS" 
+            ? "LUNAS" 
+            : `CICIL (${formatRp(t.total)})`}
+        </span>
+      </div>
+    `;
+
     box.appendChild(div);
   });
+
+  // 🔥 INI YANG LU KURANGIN TADI
+  if(tunggakanData.length > 3){
+    more.innerText = showAllTunggakan
+      ? "Tutup"
+      : "+ " + (tunggakanData.length - 3) + " anggota lainnya";
+
+    more.onclick = function(){
+      showAllTunggakan = !showAllTunggakan;
+      renderTunggakan();
+    };
+
+  } else {
+    more.innerText = "";
+  }
 }
 
 function render(){
