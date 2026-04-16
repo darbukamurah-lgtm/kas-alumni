@@ -124,24 +124,24 @@
             <div class="pay-card" onclick="togglePay('ewallet-list', this)">
                 <div class="card-header">
                     <span>E-Wallet</span>
-                    <small>Dana, GoPay, OVO, ShopeePay</small>
+                    <small>Dana, GoPay, ShopeePay</small>
                 </div>
                 <div id="ewallet-list" class="options">
                     <div class="item" onclick="pilihMetode('DANA')">DANA</div>
                     <div class="item" onclick="pilihMetode('GOPAY')">GoPay</div>
-                    <div class="item" onclick="pilihMetode('OVO')">OVO</div>
+                    <div class="item" onclick="pilihMetode('Shopeepay')">Shopeepay</div>
                 </div>
             </div>
 
             <div class="pay-card" onclick="togglePay('bank-list', this)">
                 <div class="card-header">
                     <span>Transfer Bank</span>
-                    <small>BCA, Mandiri, BNI, BRI</small>
+                    <small>Seabank</small>
                 </div>
                 <div id="bank-list" class="options">
-                    <div class="item" onclick="pilihMetode('BCA')">Bank BCA</div>
-                    <div class="item" onclick="pilihMetode('MANDIRI')">Bank Mandiri</div>
-                    <div class="item" onclick="pilihMetode('BNI')">Bank BNI</div>
+                    <div class="item hide" onclick="pilihMetode('BCA')">Bank BCA</div>
+                    <div class="item hide" onclick="pilihMetode('BRI')">Bank BRI</div>
+                    <div class="item" onclick="pilihMetode('Seabank')">Seabank</div>
                 </div>
             </div>
         </div>
