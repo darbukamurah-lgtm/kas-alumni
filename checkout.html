@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selesaikan Pembayaran</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --primary: #16a34a; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 16px; }
+        .back-btn { background: none; border: none; font-weight: 600; cursor: pointer; margin-bottom: 15px; color: var(--text); display: flex; align-items: center; gap: 5px; }
+        .total-box { text-align: center; }
+        .total-box h2 { font-size: 28px; color: var(--primary); margin: 10px 0; letter-spacing: -1px; }
+        .method-info { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px dashed #cbd5e1; position: relative;}
+        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; position: absolute; right: 10px; top: 15px;}
+        .qris-img { width: 100%; max-width: 280px; border-radius: 12px; margin: 10px auto; display: block; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+        .upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; background: #fff; }
+        .btn-confirm { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; margin-top: 20px; cursor: pointer; font-size: 16px; }
+        #preview { width: 100%; border-radius: 10px; margin-top: 10px; display: none; object-fit: contain; max-height: 250px; }
+        .qris-label { text-align: center; font-size: 12px; color: #64748b; margin-top: 5px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="back-btn" onclick="history.back()">← Kembali</button>
+    <div class="card total-box">
+        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Pembayaran</div>
+        <h2 id="displayTotal">Rp0</h2>
+    </div>
+    <div class="card">
+        <div style="font-size: 14px; font-weight: 700;">Instruksi Pembayaran: <span id="displayMetode" style="color:var(--primary)"></span></div>
+        <div id="paymentInstructions"></div>
+    </div>
+    <div class="card">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 10px;">Upload Bukti Transfer</div>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <span id="statusText" style="font-size: 13px; color: #64748b;">Klik untuk pilih/foto bukti</span>
+            <img id="preview">
+        </div>
+        <button id="btnFinish" class="btn-confirm" onclick="prosesSelesai()">Kirim Konfirmasi</button>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://ubpbtsmerfohlfkbuphd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_NLploEl-HgMy4VTr5jCa5Q_3JLiGEZT";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 2000 });
+    
+    const data = JSON.parse(localStorage.getItem('checkout_data'));
+    if (!data) window.location.href = 'bayar.html';
+
+    document.getElementById('displayTotal').innerText = 'Rp' + data.nominal.toLocaleString('id-ID');
+    document.getElementById('displayMetode').innerText = data.metode.toUpperCase();
+
+    const met = data.metode.toLowerCase();
+    const paymentInstructions = document.getElementById('paymentInstructions');
+
+    // LIST DATA BENDAHARA (SESUAIIN SAMA CARD LU)
+    const bendahara = {
+        bca: { bank: "Bank BCA", norek: "1234567890", an: "BENDAHARA ALUMNI" },
+        bri: { bank: "Bank BRI", norek: "002123456789", an: "BENDAHARA ALUMNI" },
+        seabank: { bank: "SeaBank", norek: "901861396600", an: "Siska" },
+        dana: { bank: "DANA", norek: "083138667303", an: "Siska" }
+    };
+
+    // LOGIKA PEMBAGIAN INSTRUKSI
+    if (met === 'qris' || met === 'gopay' || met === 'shopeepay') {
+        // E-Wallet & QRIS Otomatis lari ke gambar QRIS
+        paymentInstructions.innerHTML = `
+            <img src="qris.webp" class="qris-img">
+            <div class="qris-label">Scan / Screenshot QRIS di atas via ${met.toUpperCase()}</div>
+        `;
+    } else {
+        // Transfer Bank atau DANA (Manual)
+        let info = bendahara[met] || { bank: met.toUpperCase(), norek: "085875105266", an: "ADMIN SANTRI" };
+        
+        paymentInstructions.innerHTML = `
+            <div class="method-info">
+                <div style="font-size: 11px; color: #64748b; font-weight:600;">${info.bank}</div>
+                <div style="font-size: 18px; font-weight: 800; margin-top: 5px; color:#0f172a;">${info.norek}</div>
+                <div style="font-size: 12px; font-weight: 600; opacity: 0.8;">A/N ${info.an}</div>
+                <button class="copy-btn" onclick="copyNorek('${info.norek}')">SALIN</button>
+            </div>`;
+    }
+
+    function copyNorek(num) { 
+        navigator.clipboard.writeText(num); 
+        Toast.fire({ icon: 'success', title: 'Nomor disalin!' }); 
+    }
+
+    document.getElementById('fileInput').onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const preview = document.getElementById('preview');
+                preview.src = ev.target.result;
+                preview.style.display = 'block';
+                document.getElementById('statusText').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    async function convertToWebP(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const scaleFactor = Math.min(1, 1200 / Math.max(img.width, img.height));
+                    canvas.width = img.width * scaleFactor;
+                    canvas.height = img.height * scaleFactor;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => resolve(blob), 'image/webp', 0.7);
+                };
+            };
+        });
+    }
+
+    async function prosesSelesai() {
+        const fileInput = document.getElementById('fileInput');
+        if (!fileInput.files[0]) return Toast.fire({ icon: 'warning', title: 'Upload bukti transfer dulu!' });
+
+        const confirm = await Swal.fire({
+            title: 'Kirim Sekarang?',
+            text: "Request akan diverifikasi Admin",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#16a34a'
+        });
+
+        if (confirm.isConfirmed) {
+            Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+            try {
+                const webp = await convertToWebP(fileInput.files[0]);
+                const fileName = `bukti_${Date.now()}.webp`;
+                await supabaseClient.storage.from('bukti_bayar').upload(fileName, webp);
+                const { data: url } = supabaseClient.storage.from('bukti_bayar').getPublicUrl(fileName);
+                
+                await supabaseClient.from('payment_request').insert([{
+                    nama: data.nama, nominal: data.nominal, wa: data.wa,
+                    jenis: data.kategori, bukti: url.publicUrl, status: 'waiting'
+                }]);
+
+                localStorage.removeItem('checkout_data');
+                Swal.fire({ icon: 'success', title: 'Terkirim!', showConfirmButton: false, timer: 2000 })
+                    .then(() => { window.location.href = 'index.html'; });
+            } catch (err) {
+                Swal.close();
+                Toast.fire({ icon: 'error', title: 'Gagal mengirim!' });
+            }
+        }
+    }
+</script>
+</body>
+</html>
